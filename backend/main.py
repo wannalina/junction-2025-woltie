@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 import uvicorn
 import time
 import os
-from models import DishSuggestionRequest, DishSuggestionResponse, DishAnalysisRequest, DishAnalysisResponse
+from models import DishSuggestionRequest, DishRecognitionResponse, DishAnalysisRequest, DishAnalysisResponse
 from services import DishSuggestionService, DishAnalysisService
 from dotenv import load_dotenv
 
@@ -21,9 +21,9 @@ dish_analysis_service = DishAnalysisService()
 async def root():
     return {"message": "Woltie API", "status": "running"}
 
-# endpoint for getting dish suggestion based on user description
-@app.post("/api/suggest-dish", response_model=DishSuggestionResponse)
-async def suggest_dish(request: DishSuggestionRequest):
+# endpoint for recognizing dish from user description
+@app.post("/api/recognize-dish", response_model=DishRecognitionResponse)
+async def recognize_dish(request: DishSuggestionRequest):
     try:
         if not request.description or not request.description.strip():
             raise HTTPException(status_code=400, detail="Description is required")
@@ -40,7 +40,7 @@ async def suggest_dish(request: DishSuggestionRequest):
         )
 
         # return dish name, description, nearby restaurants, and confidence score
-        return DishSuggestionResponse(
+        return DishRecognitionResponse(
             dish_name=dish_info.get("dish_name", "Unknown Dish"),
             dish_description=dish_info.get("dish_description"),
             restaurants=restaurants,

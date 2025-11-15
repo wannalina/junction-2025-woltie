@@ -15,7 +15,7 @@ class RestaurantRecommendation(BaseModel):
     distance: Optional[str] = None
 
 
-class DishSuggestionResponse(BaseModel):
+class DishRecognitionResponse(BaseModel):
     dish_name: str
     dish_description: Optional[str] = None
     restaurants: List[RestaurantRecommendation]
