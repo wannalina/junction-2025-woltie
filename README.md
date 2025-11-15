@@ -54,3 +54,7 @@ For teamwork and productivity, we relied entirely on Google Docs and Google Slid
 **Python + FastAPI** — High-performance API layer for serving model responses
 
 **Google Cloud SDK** — Full integration with Gemini API and other GCP services
+
+### 📐 Design
+**Figma + Figma Make - Design and prototype
+Figma Make was prompted to create the scan effect on the food imagery. Part of the image was highlighted and then cropped into a circle to simulate the ring simulation while the image loaded. This animation was then connected to the main chatbot screen, where Make was asked to create the smooth message transition within the chat and show the conversation. The code from Figma make was used for front end development.
