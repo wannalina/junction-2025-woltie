@@ -4,7 +4,11 @@ import avatarIcon from '../assets/avatar.svg';
 import juhoIcon from '../assets/juho.svg';
 import dumplingHouseImg from '../assets/dumping-house.png';
 import breadImg from '../assets/bread.png';
+import bake1Img from '../assets/bake1.jpeg';
+import bake2Img from '../assets/bake2.jpeg';
+import bake3Img from '../assets/bake3.jpeg';
 import { apiService, ApiError } from '../services';
+import { FormattedText } from '../components/FormattedText';
 import './ChatPage.css';
 
 interface Message {
@@ -61,92 +65,149 @@ export function ChatPage() {
       setIsTyping(true);
       
       // 异步处理AI回复
-      (async () => {
-        try {
-          const aiResponse = await getAIResponse(initialMessage);
-          const aiMessage: Message = {
-            id: Date.now() + 1,
-            ...aiResponse,
-            sender: 'ai',
-            timestamp: new Date()
-          };
-          
-          setMessages(prev => [...prev, aiMessage]);
-        } catch (error) {
-          console.error('Error getting AI response:', error);
-          // 显示错误消息
-          const errorMessage: Message = {
-            id: Date.now() + 1,
-            type: 'text',
-            text: 'Sorry, I encountered an error. Please try again.',
-            sender: 'ai',
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, errorMessage]);
-        } finally {
-          setIsTyping(false);
-        }
-      })();
+      handleApiResponse(initialMessage);
     }
   }, [initialMessage]);
 
-  // AI回复（支持API调用）
-  const getAIResponse = async (userMessage: string): Promise<Omit<Message, 'id' | 'sender' | 'timestamp'>> => {
+  // 处理 API 响应并分步发送消息
+  const handleApiResponse = async (userMessage: string) => {
     const lowerMessage = userMessage.toLowerCase();
-    console.log('🔍 Lower message:', lowerMessage);
-
-    // 如果包含 "remember" 或 "help" 关键词，调用 dish recognition API
+    
+    // 检查是否需要调用 API
     if (lowerMessage.includes('remember') || lowerMessage.includes('help')) {
       try {
-        console.log('🔍 Calling dish recognition API...');
         const result = await apiService.recognizeDish({
           description: userMessage,
-          location: 'Helsinki' // 可以根据实际情况获取用户位置
+          location: 'Helsinki'
         });
         
         console.log('✅ Dish recognition result:', result);
         
-        // 构建回复文本
-        let responseText = '';
-        
-        // 根据触发词选择开场白
+        // 第一条消息：菜品名称和描述
+        let firstMessage = '';
         if (lowerMessage.includes('remember')) {
-          responseText = `I remember! You're thinking of **${result.dish_name}**. `;
+          firstMessage = `I remember! You're thinking of **${result.dish_name}**. `;
         } else if (lowerMessage.includes('help')) {
-          responseText = `I can help! That sounds like **${result.dish_name}**. `;
+          firstMessage = `I can help! That sounds like **${result.dish_name}**. `;
         } else {
-          responseText = `That's **${result.dish_name}**! `;
+          firstMessage = `That's **${result.dish_name}**! `;
         }
         
         if (result.dish_description) {
-          responseText += `${result.dish_description}\n\n`;
+          firstMessage += `${result.dish_description}`;
         }
         
-        if (result.confidence !== undefined) {
-          responseText += `(${(result.confidence * 100).toFixed(0)}% confident)\n\n`;
-        }
-        
-        if (result.restaurants && result.restaurants.length > 0) {
-          responseText += `Here are some places where you can find it:\n`;
-          result.restaurants.slice(0, 3).forEach((restaurant, index) => {
-            responseText += `\n${index + 1}. **${restaurant.name}**`;
-            if (restaurant.distance) {
-              responseText += ` - ${restaurant.distance}`;
-            }
-            if (restaurant.address) {
-              responseText += `\n   ${restaurant.address}`;
-            }
-          });
-        }
-        
-        return {
+        const message1: Message = {
+          id: Date.now(),
           type: 'text',
-          text: responseText
+          text: firstMessage,
+          sender: 'ai',
+          timestamp: new Date()
         };
+        
+        setMessages(prev => [...prev, message1]);
+        
+        // 1.5秒后发送第二条消息：图片
+        setTimeout(() => {
+          setIsTyping(true);
+          
+          setTimeout(() => {
+            const message2: Message = {
+              id: Date.now() + 1,
+              type: 'image',
+              text: `Here's what **${result.dish_name}** looks like:`,
+              imageUrl: breadImg,
+              sender: 'ai',
+              timestamp: new Date()
+            };
+            
+            setMessages(prev => [...prev, message2]);
+            
+            // 1.5秒后发送第三条消息：餐厅推荐引导
+            setTimeout(() => {
+              setIsTyping(true);
+              
+              setTimeout(() => {
+                if (result.restaurants && result.restaurants.length > 0) {
+                  // 先发送引导消息
+                  const introMessage: Message = {
+                    id: Date.now() + 2,
+                    type: 'text',
+                    text: `Here are some great places to try it:`,
+                    sender: 'ai',
+                    timestamp: new Date()
+                  };
+                  setMessages(prev => [...prev, introMessage]);
+                  
+                  // 餐厅图片数组
+                  const restaurantImages = [bake1Img, bake2Img, bake3Img];
+                  
+                  // 依次发送每个餐厅的信息
+                  const sendRestaurantMessages = (index: number) => {
+                    if (index >= Math.min(result.restaurants.length, 3)) {
+                      setIsTyping(false);
+                      return;
+                    }
+                    
+                    setTimeout(() => {
+                      setIsTyping(true);
+                      
+                      setTimeout(() => {
+                        const restaurant = result.restaurants[index];
+                        let restaurantText = `**${index + 1}. ${restaurant.name}**\n`;
+                        
+                        if (restaurant.description) {
+                          restaurantText += `${restaurant.description}\n`;
+                        }
+                        
+                        if (restaurant.address) {
+                          restaurantText += `📍 ${restaurant.address}`;
+                        }
+                        
+                        const restaurantMessage: Message = {
+                          id: Date.now() + 3 + index,
+                          type: 'image',
+                          text: restaurantText,
+                          imageUrl: restaurantImages[index],
+                          sender: 'ai',
+                          timestamp: new Date()
+                        };
+                        
+                        setMessages(prev => [...prev, restaurantMessage]);
+                        setIsTyping(false);
+                        
+                        // 继续发送下一个餐厅
+                        sendRestaurantMessages(index + 1);
+                      }, 1000);
+                    }, 1500);
+                  };
+                  
+                  // 开始发送第一个餐厅
+                  setIsTyping(false);
+                  sendRestaurantMessages(0);
+                } else {
+                  const noRestaurantMessage: Message = {
+                    id: Date.now() + 2,
+                    type: 'text',
+                    text: "I couldn't find any restaurants nearby at the moment.",
+                    sender: 'ai',
+                    timestamp: new Date()
+                  };
+                  setMessages(prev => [...prev, noRestaurantMessage]);
+                  setIsTyping(false);
+                }
+              }, 1000);
+            }, 1500);
+            
+            setIsTyping(false);
+          }, 1000);
+        }, 1500);
+        
+        setIsTyping(false);
+        
       } catch (error) {
         console.error('❌ Dish recognition error:', error);
         
-        // 根据触发词选择错误提示
         let errorText = '';
         if (lowerMessage.includes('remember')) {
           errorText = "I'm trying to remember, but I'm having trouble connecting to my memory. ";
@@ -170,12 +231,41 @@ export function ChatPage() {
           errorText += "Please check your connection and try again.";
         }
         
-        return {
+        const errorMessage: Message = {
+          id: Date.now(),
           type: 'text',
-          text: errorText
+          text: errorText,
+          sender: 'ai',
+          timestamp: new Date()
         };
+        
+        setMessages(prev => [...prev, errorMessage]);
+        setIsTyping(false);
+      }
+    } else {
+      // 非 API 调用的普通回复
+      try {
+        const response = await getAIResponse(userMessage);
+        if (response) {
+          const aiMessage: Message = {
+            id: Date.now(),
+            ...response,
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, aiMessage]);
+        }
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+      } finally {
+        setIsTyping(false);
       }
     }
+  };
+
+  // AI回复（非API调用的普通回复）
+  const getAIResponse = async (userMessage: string): Promise<Omit<Message, 'id' | 'sender' | 'timestamp'>> => {
+    const lowerMessage = userMessage.toLowerCase();
     
     // 如果询问位置、地图或附近，返回图片
     if (lowerMessage.includes('near') || lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('map')) {
@@ -225,39 +315,14 @@ export function ChatPage() {
       };
       
       const currentMessage = message;
-      setMessages([...messages, userMessage]);
+      setMessages(prev => [...prev, userMessage]);
       setMessage('');
       
       // 显示"正在输入"动画
       setIsTyping(true);
       
-      // 异步处理AI回复
-      (async () => {
-        try {
-          const aiResponse = await getAIResponse(currentMessage);
-          const aiMessage: Message = {
-            id: Date.now() + 1,
-            ...aiResponse,
-            sender: 'ai',
-            timestamp: new Date()
-          };
-          
-          setMessages(prev => [...prev, aiMessage]);
-        } catch (error) {
-          console.error('Error getting AI response:', error);
-          // 显示错误消息
-          const errorMessage: Message = {
-            id: Date.now() + 1,
-            type: 'text',
-            text: 'Sorry, I encountered an error. Please try again.',
-            sender: 'ai',
-            timestamp: new Date()
-          };
-          setMessages(prev => [...prev, errorMessage]);
-        } finally {
-          setIsTyping(false);
-        }
-      })();
+      // 处理 API 响应
+      handleApiResponse(currentMessage);
     }
   };
 
@@ -302,11 +367,15 @@ export function ChatPage() {
               )}
               {msg.type === 'text' ? (
                 <div className="message-content">
-                  {msg.text}
+                  {msg.text && <FormattedText text={msg.text} />}
                 </div>
               ) : (
                 <div className="message-content image-content">
-                  {msg.text && <div className="image-message-text">{msg.text}</div>}
+                  {msg.text && (
+                    <div className="image-message-text">
+                      <FormattedText text={msg.text} />
+                    </div>
+                  )}
                   {msg.imageUrl && (
                     <img 
                       src={msg.imageUrl} 

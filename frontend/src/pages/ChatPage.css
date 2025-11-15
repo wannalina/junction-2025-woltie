@@ -120,10 +120,13 @@
 .message-bubble.user {
   flex-direction: row-reverse;
   justify-content: flex-start;
+  margin-left: auto;
 }
 
 .message-bubble.ai {
   flex-direction: row;
+  justify-content: flex-start;
+  margin-right: auto;
 }
 
 .message-content {
@@ -133,6 +136,7 @@
   font-size: 15px;
   line-height: 1.5;
   word-wrap: break-word;
+  white-space: pre-wrap; /* 保留换行符和空格 */
 }
 
 /* 图片消息样式 */
@@ -175,11 +179,17 @@
   border-radius: 50%;
   flex-shrink: 0;
   align-self: flex-end;
+  order: 0;
 }
 
 /* AI头像 */
 .ai-avatar {
   align-self: flex-start;
+}
+
+/* 用户头像 - 在右边 */
+.message-bubble.user .message-avatar {
+  order: -1;
 }
 
 /* 正在输入指示器 */
