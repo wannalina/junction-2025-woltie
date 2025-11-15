@@ -41,16 +41,16 @@ class InitializeGoogleCloudServices:
         api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
-            self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+            self.gemini_model = genai.GenerativeModel('gemini-2.5-pro')
         elif credentials:
             try:
-                self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+                self.gemini_model = genai.GenerativeModel('gemini-2.5-pro')
             except Exception as e:
                 print(f"Warning: Gemini initialization with credentials failed: {e}")
                 self.gemini_model = None
         else:
             try:
-                self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+                self.gemini_model = genai.GenerativeModel('gemini-2.5-pro')
             except Exception as e:
                 print(f"Warning: Gemini initialization failed: {e}")
                 self.gemini_model = None
@@ -68,22 +68,28 @@ class DishSuggestionService(InitializeGoogleCloudServices):
             raise Exception("Gemini model not initialized. Please set GEMINI_API_KEY or configure Google Cloud credentials.")
         
         prompt = f"""
-            Based on this food description, identify the most likely dish name and provide a brief description.
+            You are a food expert. Identify the exact dish name from the user's description.
 
             User description: "{description}"
 
-            Respond in the following JSON format:
-            {{
-                "dish_name": "exact dish name",
-                "dish_description": "brief description of the dish",
-                "confidence": 0.0-1.0
-            }}
+            Your task: Find the actual, traditional name of this dish. Do NOT just capitalize the description - find the real dish name.
 
             Examples:
-            - "cheesy baked eggplant dish" → {{"dish_name": "Melanzane alla Parmigiana", "dish_description": "Italian baked eggplant dish with tomato sauce and cheese", "confidence": 0.95}}
-            - "spicy noodle soup with beef" → {{"dish_name": "Pho", "dish_description": "Vietnamese noodle soup with beef and herbs", "confidence": 0.9}}
+            - Input: "cheesy baked eggplant dish"
+            Output: {{"dish_name": "Melanzane alla Parmigiana", "dish_description": "Italian baked eggplant dish with tomato sauce and cheese", "confidence": 0.95}}
 
-            Only respond with valid JSON, no additional text.
+            - Input: "spicy noodle soup with beef"
+            Output: {{"dish_name": "Pho", "dish_description": "Vietnamese noodle soup with beef and herbs", "confidence": 0.9}}
+
+            - Input: "fried rice with egg and vegetables"
+            Output: {{"dish_name": "Yangzhou Fried Rice", "dish_description": "Chinese fried rice with eggs, vegetables, and sometimes meat", "confidence": 0.85}}
+
+            IMPORTANT: Return ONLY valid JSON in this exact format (no markdown, no code blocks, no explanations):
+            {{
+                "dish_name": "actual dish name",
+                "dish_description": "brief description",
+                "confidence": 0.95
+            }}
         """
 
         response_text = ""
@@ -92,6 +98,7 @@ class DishSuggestionService(InitializeGoogleCloudServices):
 
             # parse response
             response_text = response.text.strip()
+            print("RESPONSE\n\n", response_text)
             if response_text.startswith("```json"):
                 response_text = response_text[7:]
             if response_text.startswith("```"):
