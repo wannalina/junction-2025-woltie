@@ -3,6 +3,6 @@
  */
 
 export { apiService, ApiError, default as WoltieApiService } from './apiService';
-export * from './types';
+export type * from './types';
 export * from './apiConfig';
 

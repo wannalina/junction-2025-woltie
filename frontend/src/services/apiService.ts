@@ -7,7 +7,7 @@
  */
 import type {
     DishSuggestionRequest,
-    DishSuggestionResponse,
+    DishRecognitionResponse,
     DishAnalysisRequest,
     DishAnalysisResponse,
     ApiErrorResponse,
@@ -122,32 +122,50 @@ class WoltieApiService {
   }
 
   /**
-   * 基于用户描述建议菜品
-   * POST /api/suggest-dish
+   * 基于用户描述识别菜品
+   * POST /api/recognize-dish
    * 
    * @param request - 包含用户描述、位置等信息
    * @returns 菜品名称、描述、推荐餐厅列表
    */
-  async suggestDish(request: DishSuggestionRequest): Promise<DishSuggestionResponse> {
-    const url = `${this.baseUrl}${API_ENDPOINTS.SUGGEST_DISH}`;
+  async recognizeDish(request: DishSuggestionRequest): Promise<DishRecognitionResponse> {
+    const url = `${this.baseUrl}${API_ENDPOINTS.RECOGNIZE_DISH}`;
     const response = await fetchWithTimeout(url, {
       method: 'POST',
       body: JSON.stringify(request),
     });
 
-    return handleApiResponse<DishSuggestionResponse>(response);
+    return handleApiResponse<DishRecognitionResponse>(response);
   }
 
   /**
-   * 分析菜品 - Wolty AI Assistant Feature 1
-   * POST /api/analyze-dish
+   * 分析菜品 - Wolty AI Assistant Feature 1 (Demo Mode)
+   * GET /api/analyze-dish
    * 
    * 分析餐厅提供的照片和描述，输出关于菜品的全面信息
    * 
+   * Note: 这是一个 demo 端点，使用固定的测试数据，不需要参数
+   * 
+   * @returns 详细的菜品分析结果
+   */
+  async analyzeDish(): Promise<DishAnalysisResponse> {
+    const url = `${this.baseUrl}${API_ENDPOINTS.ANALYZE_DISH}`;
+    const response = await fetchWithTimeout(url, {
+      method: 'GET',
+    });
+
+    return handleApiResponse<DishAnalysisResponse>(response);
+  }
+
+  /**
+   * 分析菜品（完整版本 - 当后端支持时使用）
+   * POST /api/analyze-dish
+   * 
+   * @deprecated 当前后端使用 demo 模式，请使用 analyzeDish() 方法
    * @param request - 包含菜品标题、描述、图片等信息
    * @returns 详细的菜品分析结果
    */
-  async analyzeDish(request: DishAnalysisRequest): Promise<DishAnalysisResponse> {
+  async analyzeDishWithData(request: DishAnalysisRequest): Promise<DishAnalysisResponse> {
     // 验证必填字段
     if (!request.title?.trim()) {
       throw new ApiError(400, 'Validation Error', 'Title is required');

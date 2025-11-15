@@ -2,7 +2,7 @@
  * API Types - 匹配后端 models.py 的数据结构
  */
 
-// ============= Dish Suggestion API =============
+// ============= Dish Recognition API =============
 
 export interface DishSuggestionRequest {
   description: string;
@@ -17,7 +17,7 @@ export interface RestaurantRecommendation {
   distance?: string;
 }
 
-export interface DishSuggestionResponse {
+export interface DishRecognitionResponse {
   dish_name: string;
   dish_description?: string;
   restaurants: RestaurantRecommendation[];

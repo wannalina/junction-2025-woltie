@@ -4,6 +4,7 @@ import avatarIcon from '../assets/avatar.svg';
 import juhoIcon from '../assets/juho.svg';
 import dumplingHouseImg from '../assets/dumping-house.png';
 import breadImg from '../assets/bread.png';
+import { apiService, ApiError } from '../services';
 import './ChatPage.css';
 
 interface Message {
@@ -59,25 +60,122 @@ export function ChatPage() {
       setMessages([userMessage]);
       setIsTyping(true);
       
-      // 1秒后显示AI回复
-      setTimeout(() => {
-        const aiResponse = getAIResponse(initialMessage);
-        const aiMessage: Message = {
-          id: Date.now() + 1,
-          ...aiResponse,
-          sender: 'ai',
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, aiMessage]);
-        setIsTyping(false);
-      }, 1000);
+      // 异步处理AI回复
+      (async () => {
+        try {
+          const aiResponse = await getAIResponse(initialMessage);
+          const aiMessage: Message = {
+            id: Date.now() + 1,
+            ...aiResponse,
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, aiMessage]);
+        } catch (error) {
+          console.error('Error getting AI response:', error);
+          // 显示错误消息
+          const errorMessage: Message = {
+            id: Date.now() + 1,
+            type: 'text',
+            text: 'Sorry, I encountered an error. Please try again.',
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, errorMessage]);
+        } finally {
+          setIsTyping(false);
+        }
+      })();
     }
   }, [initialMessage]);
 
-  // 模拟AI回复
-  const getAIResponse = (userMessage: string): Omit<Message, 'id' | 'sender' | 'timestamp'> => {
+  // AI回复（支持API调用）
+  const getAIResponse = async (userMessage: string): Promise<Omit<Message, 'id' | 'sender' | 'timestamp'>> => {
     const lowerMessage = userMessage.toLowerCase();
+    console.log('🔍 Lower message:', lowerMessage);
+
+    // 如果包含 "remember" 或 "help" 关键词，调用 dish recognition API
+    if (lowerMessage.includes('remember') || lowerMessage.includes('help')) {
+      try {
+        console.log('🔍 Calling dish recognition API...');
+        const result = await apiService.recognizeDish({
+          description: userMessage,
+          location: 'Helsinki' // 可以根据实际情况获取用户位置
+        });
+        
+        console.log('✅ Dish recognition result:', result);
+        
+        // 构建回复文本
+        let responseText = '';
+        
+        // 根据触发词选择开场白
+        if (lowerMessage.includes('remember')) {
+          responseText = `I remember! You're thinking of **${result.dish_name}**. `;
+        } else if (lowerMessage.includes('help')) {
+          responseText = `I can help! That sounds like **${result.dish_name}**. `;
+        } else {
+          responseText = `That's **${result.dish_name}**! `;
+        }
+        
+        if (result.dish_description) {
+          responseText += `${result.dish_description}\n\n`;
+        }
+        
+        if (result.confidence !== undefined) {
+          responseText += `(${(result.confidence * 100).toFixed(0)}% confident)\n\n`;
+        }
+        
+        if (result.restaurants && result.restaurants.length > 0) {
+          responseText += `Here are some places where you can find it:\n`;
+          result.restaurants.slice(0, 3).forEach((restaurant, index) => {
+            responseText += `\n${index + 1}. **${restaurant.name}**`;
+            if (restaurant.distance) {
+              responseText += ` - ${restaurant.distance}`;
+            }
+            if (restaurant.address) {
+              responseText += `\n   ${restaurant.address}`;
+            }
+          });
+        }
+        
+        return {
+          type: 'text',
+          text: responseText
+        };
+      } catch (error) {
+        console.error('❌ Dish recognition error:', error);
+        
+        // 根据触发词选择错误提示
+        let errorText = '';
+        if (lowerMessage.includes('remember')) {
+          errorText = "I'm trying to remember, but I'm having trouble connecting to my memory. ";
+        } else if (lowerMessage.includes('help')) {
+          errorText = "I'd love to help, but I'm having trouble accessing the information right now. ";
+        } else {
+          errorText = "I'm having trouble processing your request. ";
+        }
+        
+        if (error instanceof ApiError) {
+          if (error.statusCode === 400) {
+            errorText += "Could you describe the dish in more detail?";
+          } else if (error.statusCode === 500) {
+            errorText += "My systems are experiencing some issues. Please try again in a moment.";
+          } else if (error.statusCode === 408) {
+            errorText += "The request is taking too long. Please try again.";
+          } else {
+            errorText += "Please try again.";
+          }
+        } else {
+          errorText += "Please check your connection and try again.";
+        }
+        
+        return {
+          type: 'text',
+          text: errorText
+        };
+      }
+    }
     
     // 如果询问位置、地图或附近，返回图片
     if (lowerMessage.includes('near') || lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('map')) {
@@ -133,19 +231,33 @@ export function ChatPage() {
       // 显示"正在输入"动画
       setIsTyping(true);
       
-      // 1秒后显示AI回复
-      setTimeout(() => {
-        const aiResponse = getAIResponse(currentMessage);
-        const aiMessage: Message = {
-          id: Date.now() + 1,
-          ...aiResponse,
-          sender: 'ai',
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, aiMessage]);
-        setIsTyping(false);
-      }, 1000);
+      // 异步处理AI回复
+      (async () => {
+        try {
+          const aiResponse = await getAIResponse(currentMessage);
+          const aiMessage: Message = {
+            id: Date.now() + 1,
+            ...aiResponse,
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, aiMessage]);
+        } catch (error) {
+          console.error('Error getting AI response:', error);
+          // 显示错误消息
+          const errorMessage: Message = {
+            id: Date.now() + 1,
+            type: 'text',
+            text: 'Sorry, I encountered an error. Please try again.',
+            sender: 'ai',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, errorMessage]);
+        } finally {
+          setIsTyping(false);
+        }
+      })();
     }
   };
 

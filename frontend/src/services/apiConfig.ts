@@ -8,7 +8,7 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localho
 // API Endpoints
 export const API_ENDPOINTS = {
   ROOT: '/',
-  SUGGEST_DISH: '/api/suggest-dish',
+  RECOGNIZE_DISH: '/api/recognize-dish',
   ANALYZE_DISH: '/api/analyze-dish',
 } as const;
 
