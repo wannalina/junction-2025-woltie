@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { RestaurantCard } from '../components/RestaurantCard';
 import { PromotionBanner } from '../components/PromotionBanner';
 import { CartoonFloatButton } from '../components/CartoonFloatButton';
+import { NextPage } from './NextPage';
 import { Compass, Utensils, Store, Search, User } from 'lucide-react';
 
 export function Home() {
   const [activeCategory, setActiveCategory] = useState('Restaurants');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const categories = ['Restaurants', 'Groceries', 'Market', 'Pharmacy'];
   
@@ -244,8 +246,11 @@ export function Home() {
         </div>
       </div>
 
-      {/* Cartoon Float Button */}
-      <CartoonFloatButton />
+      {/* Cartoon Float Button - 抽屉打开时隐藏 */}
+      {!isDrawerOpen && <CartoonFloatButton onClick={() => setIsDrawerOpen(true)} />}
+      
+      {/* Drawer组件 */}
+      <NextPage isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
       </div>
     </div>
   );

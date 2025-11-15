@@ -1,13 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
-import { NextPage } from './pages/NextPage';
 import { RestaurantDetail } from './pages/RestaurantDetail';
+import { ChatPage } from './pages/ChatPage';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/next" element={<NextPage />} />
+      <Route path="/chat" element={<ChatPage />} />
       <Route path="/restaurant/:id" element={<RestaurantDetail />} />
     </Routes>
   );

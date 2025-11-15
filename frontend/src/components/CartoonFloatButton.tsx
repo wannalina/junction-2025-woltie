@@ -1,12 +1,13 @@
-import { useNavigate } from 'react-router-dom';
 import juhoIcon from '../assets/juho.svg';
 import './CartoonFloatButton.css';
 
-export function CartoonFloatButton() {
-  const navigate = useNavigate();
+interface CartoonFloatButtonProps {
+  onClick: () => void;
+}
 
+export function CartoonFloatButton({ onClick }: CartoonFloatButtonProps) {
   return (
-    <div className="cartoon-float-button-wrapper" onClick={() => navigate('/next')}>
+    <div className="cartoon-float-button-wrapper" onClick={onClick}>
       <div className="cartoon-button">
         {/* Juho 卡通图标 */}
         <img 
