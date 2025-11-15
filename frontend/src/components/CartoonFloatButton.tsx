@@ -2,10 +2,11 @@ import juhoIcon from '../assets/juho.svg';
 import './CartoonFloatButton.css';
 
 interface CartoonFloatButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
+  showTooltip?: boolean;
 }
 
-export function CartoonFloatButton({ onClick }: CartoonFloatButtonProps) {
+export function CartoonFloatButton({ onClick, showTooltip = false }: CartoonFloatButtonProps) {
   return (
     <div className="cartoon-float-button-wrapper" onClick={onClick}>
       <div className="cartoon-button">
@@ -18,7 +19,7 @@ export function CartoonFloatButton({ onClick }: CartoonFloatButtonProps) {
       </div>
       
       {/* 文字提示 */}
-      <div className="tooltip-text">Press the photo!</div>
+      {showTooltip && <div className="tooltip-text">Press the photo!</div>}
     </div>
   );
 }

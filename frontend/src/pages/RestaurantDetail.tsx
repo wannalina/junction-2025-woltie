@@ -385,12 +385,12 @@ export function RestaurantDetail() {
             >
               <div className="w-full mx-auto">
                 {/* Handle Bar */}
-                <div className="flex justify-center pt-3 pb-2">
+                <div className={`flex justify-center pt-3 pb-2 transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
                   <div className="w-10 h-1 bg-gray-600 rounded-full"></div>
                 </div>
 
                 {/* Close Button */}
-                <div className="absolute top-4 right-4 z-10">
+                <div className={`absolute top-4 right-4 z-10 transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
                   <button 
                     onClick={handleCloseModal}
                     className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-zinc-700 transition-colors"
@@ -404,7 +404,7 @@ export function RestaurantDetail() {
                   <img
                     src={selectedItem.image}
                     alt={selectedItem.name}
-                    className="w-full h-48 object-cover rounded-[20px] cursor-pointer transition-opacity"
+                    className={`w-full h-48 object-cover rounded-[20px] cursor-pointer transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}
                     onMouseDown={handleLongPressStart}
                     onMouseUp={handleLongPressEnd}
                     onMouseLeave={handleLongPressEnd}
@@ -422,16 +422,16 @@ export function RestaurantDetail() {
                   )}
                   
                   {/* Cartoon Float Button on image */}
-                  <div className="absolute bottom-[-50px] right-[5px] scale-[1]">
-                    <CartoonFloatButton />
+                  <div className={`absolute bottom-[-50px] right-[5px] scale-[1] transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                    <CartoonFloatButton showTooltip={true} />
                   </div>
                   
-                  {/* Scanning animation overlay on the image */}
+                  {/* Scanning animation in center of image */}
                   {isScanning && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-[20px]"
+                      className="absolute inset-0 flex items-center justify-center z-50"
                     >
                       <div className="scale-75">
                         <ScanningAnimation dishImage={selectedItem.image} />
@@ -441,7 +441,7 @@ export function RestaurantDetail() {
                 </div>
 
                 {/* Dish Info */}
-                <div className="px-6 pb-4 text-left">
+                <div className={`px-6 pb-4 text-left transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
                   <h2 className="text-[24px] font-bold mb-3 text-white text-left">{selectedItem.name}</h2>
                   
                   {/* Price */}
@@ -473,16 +473,7 @@ export function RestaurantDetail() {
                       className="w-full flex items-center justify-between p-4 mb-3 rounded-xl bg-[#242424] hover:bg-[#2a2a2a] transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                          selectedOption === 'full' 
-                            ? 'border-[#009FE6] bg-[#009FE6]' 
-                            : 'border-gray-500'
-                        }`}>
-                          {selectedOption === 'full' && (
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
+                        <div className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center transition-colors">
                         </div>
                         <span className="text-[13px] text-white text-left">Koko boksi täyteen pääruokaa</span>
                       </div>
@@ -513,33 +504,34 @@ export function RestaurantDetail() {
                 </div>
 
                 {/* Bottom Action Bar */}
-                <div className="sticky bottom-0 bg-[#1a1a1a] px-6 py-4 border-t border-gray-800">
-                  <div className="flex items-center gap-3">
+                <div className={`sticky bottom-0 bg-[#1a1a1a] px-3 py-2 transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                  <div className="flex items-stretch gap-2">
                     {/* Quantity Selector */}
-                    <div className="flex items-center gap-2 bg-[#0d3540] rounded-xl px-3 py-2">
+                    <div className="flex items-center gap-2 bg-[#1e3a47] rounded-lg px-3 py-2">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-8 h-8 flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-30"
+                        className="text-white hover:opacity-80 transition-opacity disabled:opacity-30"
                         disabled={quantity <= 1}
                       >
-                        <Minus className="w-4 h-4 text-white" strokeWidth={3} />
+                        <Minus className="w-3 h-3" strokeWidth={2.5} />
                       </button>
-                      <span className="text-lg font-bold text-white w-8 text-center">{quantity}</span>
+                      <span className="text-xs font-bold text-white min-w-[18px] text-center">{quantity}</span>
                       <button
                         onClick={() => setQuantity(quantity + 1)}
-                        className="w-8 h-8 flex items-center justify-center hover:opacity-80 transition-opacity"
+                        className="text-white hover:opacity-80 transition-opacity"
                       >
-                        <Plus className="w-4 h-4 text-white" strokeWidth={3} />
+                        <Plus className="w-3 h-3" strokeWidth={2.5} />
                       </button>
                     </div>
 
                     {/* Add to Cart Button */}
                     <button
                       onClick={handleAddToCart}
-                      className="flex-1 py-3.5 rounded-xl font-bold text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg text-base"
+                      className="flex-1 py-2 rounded-lg font-bold text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg"
                       style={{ backgroundColor: '#009FE6' }}
                     >
-                      Lisää tilaukseen {((selectedItem.price + (selectedOption === 'full' ? 1 : 0)) * quantity).toFixed(2).replace('.', ',')} €
+                      <span className="text-xs">Lisää tilaukseen</span>
+                      <span className="text-xs ml-2">{((selectedItem.price + (selectedOption === 'full' ? 1 : 0)) * quantity).toFixed(2).replace('.', ',')} €</span>
                     </button>
                   </div>
                 </div>
