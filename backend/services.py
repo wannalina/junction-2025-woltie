@@ -41,16 +41,16 @@ class InitializeGoogleCloudServices:
         api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             genai.configure(api_key=api_key)
-            self.gemini_model = genai.GenerativeModel('gemini-2.5-pro')
+            self.gemini_model = genai.GenerativeModel('gemini-2.5-flash-lite')
         elif credentials:
             try:
-                self.gemini_model = genai.GenerativeModel('gemini-2.5-pro')
+                self.gemini_model = genai.GenerativeModel('gemini-2.5-flash-lite')
             except Exception as e:
                 print(f"Warning: Gemini initialization with credentials failed: {e}")
                 self.gemini_model = None
         else:
             try:
-                self.gemini_model = genai.GenerativeModel('gemini-2.5-pro')
+                self.gemini_model = genai.GenerativeModel('gemini-2.5-flash-lite')
             except Exception as e:
                 print(f"Warning: Gemini initialization failed: {e}")
                 self.gemini_model = None
@@ -141,7 +141,8 @@ class DishSuggestionService(InitializeGoogleCloudServices):
             - Provide ACTUAL establishments names that exist in this city
             - Include real street addresses in location: {location}
             - Explain, in one sentence, why each establishment is good for this specific dish
-            - If you don't know specific establishments in this city, suggest well-known establishment types or chains that typically serve this dish in that city.
+            - If you don't know specific establishments in this city, suggest well-known establishment types or chains that typically serve this dish in that city. 
+            - Do NOT give any fake data.
 
             City: {location if location else "Not specified"}
 
