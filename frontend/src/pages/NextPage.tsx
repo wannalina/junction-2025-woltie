@@ -115,7 +115,7 @@ export function NextPage() {
   };
 
   return (
-    <div className="chat-assistant-page">
+    <div className={`chat-assistant-page ${showChatView ? 'chat-view' : ''}`}>
       {/* 主内容区 */}
       <div className="chat-content" ref={chatContentRef}>
         {showChatView ? (
@@ -242,6 +242,18 @@ export function NextPage() {
 
       {/* 底部输入框 */}
       <div className="message-input-container">
+        {/* 操作按钮 */}
+        {showChatView && messages.length > 0 && (
+          <div className="action-buttons">
+            <button className="action-button">
+              Find locations near me
+            </button>
+            <button className="action-button">
+              Learn more
+            </button>
+          </div>
+        )}
+        
         <form onSubmit={handleSendMessage} style={{ width: '100%', position: 'relative' }}>
           <input
             type="text"
