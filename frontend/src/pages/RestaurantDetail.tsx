@@ -218,8 +218,8 @@ export function RestaurantDetail() {
                     alt={item.name}
                     className="w-full h-28 object-cover"
                   />
-                  <button className="absolute top-2 right-2 w-7 h-7 bg-cyan-400 rounded-full flex items-center justify-center hover:bg-cyan-500 transition-colors">
-                    <Plus className="w-4 h-4 text-black" />
+                  <button className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style={{ backgroundColor: '#009FE6' }}>
+                    <Plus className="w-4 h-4 text-white" />
                   </button>
                   <div className="p-2.5">
                     <p className="text-xs font-medium">{item.name}</p>
@@ -233,7 +233,7 @@ export function RestaurantDetail() {
 
         {/* Fixed Bottom Schedule Button */}
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[calc(28rem-2rem)] lg:max-w-[calc(32rem-2rem)] z-50">
-          <button className="w-full bg-cyan-400 text-black py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-cyan-500 transition-colors shadow-2xl">
+          <button className="w-full text-black py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-2xl" style={{ backgroundColor: '#009FE6' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0088CC'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#009FE6'}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>

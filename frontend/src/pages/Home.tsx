@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { RestaurantCard } from '../components/RestaurantCard';
 import { PromotionBanner } from '../components/PromotionBanner';
+import { CartoonFloatButton } from '../components/CartoonFloatButton';
 import { Compass, Utensils, Store, Search, User } from 'lucide-react';
 
 export function Home() {
@@ -238,9 +239,13 @@ export function Home() {
               <User className="w-4 h-4" />
               <span className="text-[8px]">Profile</span>
             </button>
+            
           </div>
         </div>
       </div>
+
+      {/* Cartoon Float Button */}
+      <CartoonFloatButton />
       </div>
     </div>
   );
