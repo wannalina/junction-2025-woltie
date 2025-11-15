@@ -15,6 +15,7 @@ export function RestaurantDetail() {
   const [selectedOption, setSelectedOption] = useState('full');
   const [isPressed, setIsPressed] = useState(false);
   const longPressTimer = useRef<number | null>(null);
+  const isApiCalling = useRef(false); // 防止重复调用 API
 
   // Mock data - in a real app, you would fetch this from an API based on the id
   const restaurantData: Record<string, any> = {
@@ -176,21 +177,31 @@ export function RestaurantDetail() {
   const handleLongPressStart = () => {
     setIsPressed(true);
     longPressTimer.current = window.setTimeout(async () => {
+      // 防止重复调用 API
+      if (isApiCalling.current) {
+        console.log('⏳ API call already in progress, skipping...');
+        return;
+      }
+      
+      isApiCalling.current = true;
       setIsScanning(true);
       
       // Call API to analyze dish using apiService
       try {
+        console.log('📡 Calling analyzeDish API...');
         const data = await apiService.analyzeDish();
-        console.log('API Response:', data);
+        console.log('✅ API Response:', data);
         
         // Navigate to chat page after receiving response
         setTimeout(() => {
           navigate('/chat', { state: { analysisData: data } });
           setIsScanning(false);
           setIsPressed(false);
+          isApiCalling.current = false; // 重置标志
         }, 1000);
       } catch (error) {
-        console.error('Error calling API:', error);
+        console.error('❌ Error calling API:', error);
+        isApiCalling.current = false; // 重置标志
         // Still navigate even if API fails
         setTimeout(() => {
           navigate('/chat');
@@ -205,6 +216,7 @@ export function RestaurantDetail() {
     setIsPressed(false);
     if (longPressTimer.current && !isScanning) {
       clearTimeout(longPressTimer.current);
+      isApiCalling.current = false; // 取消长按时重置标志
     }
   };
 

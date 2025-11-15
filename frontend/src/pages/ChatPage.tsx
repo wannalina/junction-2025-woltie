@@ -7,6 +7,8 @@ import breadImg from '../assets/bread.png';
 import bake1Img from '../assets/bake1.jpeg';
 import bake2Img from '../assets/bake2.jpeg';
 import bake3Img from '../assets/bake3.jpeg';
+import dishImg from '../assets/dish.jpeg';
+import chinaImg from '../assets/china.jpg';
 import { apiService, ApiError } from '../services';
 import { FormattedText } from '../components/FormattedText';
 import './ChatPage.css';
@@ -16,14 +18,16 @@ interface Message {
   text?: string;
   sender: 'user' | 'ai';
   timestamp: Date;
-  type: 'text' | 'image';
+  type: 'text' | 'image' | 'dish-card';
   imageUrl?: string;
+  dishData?: any; // 用于存储菜品分析数据
 }
 
 export function ChatPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const initialMessage = location.state?.initialMessage as string | undefined;
+  const analysisData = location.state?.analysisData;
   
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -48,6 +52,17 @@ export function ChatPage() {
     }
   }, [messages, isTyping]);
 
+  // 处理从 restaurant 页面跳转过来的菜品分析
+  useEffect(() => {
+    if (analysisData && !hasInitialized.current) {
+      hasInitialized.current = true;
+      setIsTyping(true);
+      
+      // 处理菜品分析数据
+      handleDishAnalysis(analysisData);
+    }
+  }, [analysisData]);
+
   // 处理初始消息
   useEffect(() => {
     if (initialMessage && !hasInitialized.current) {
@@ -68,6 +83,103 @@ export function ChatPage() {
       handleApiResponse(initialMessage);
     }
   }, [initialMessage]);
+
+  // 处理菜品分析数据（从 restaurant 页面跳转过来）
+  const handleDishAnalysis = async (data: any) => {
+    try {
+      // 发送菜品卡片消息
+      const message: Message = {
+        id: Date.now(),
+        type: 'dish-card',
+        sender: 'ai',
+        timestamp: new Date(),
+        dishData: data
+      };
+      
+      setMessages([message]);
+      setIsTyping(false);
+      
+      // 1.5秒后发送 Ingredient Origins (食材来源 - 第二条消息)
+      if (data.ingredient_origins) {
+        setTimeout(() => {
+          setIsTyping(true);
+          
+          setTimeout(() => {
+            const originsMessage: Message = {
+              id: Date.now() + 1,
+              type: 'image',
+              text: `🌍 **Where does it come from?**\n\n${data.ingredient_origins}`,
+              imageUrl: chinaImg,
+              sender: 'ai',
+              timestamp: new Date()
+            };
+            
+            setMessages(prev => [...prev, originsMessage]);
+            setIsTyping(false);
+            
+            // 1.5秒后发送历史背景
+            if (data.historical_background) {
+              setTimeout(() => {
+                setIsTyping(true);
+                
+                setTimeout(() => {
+                  const historyMessage: Message = {
+                    id: Date.now() + 2,
+                    type: 'text',
+                    text: `📜 **A bit of history...**\n\n${data.historical_background}`,
+                    sender: 'ai',
+                    timestamp: new Date()
+                  };
+                  
+                  setMessages(prev => [...prev, historyMessage]);
+                  setIsTyping(false);
+                  
+                  // 1.5秒后发送 Fun Facts
+                  if (data.fun_facts && data.fun_facts.length > 0) {
+                    setTimeout(() => {
+                      setIsTyping(true);
+                      
+                      setTimeout(() => {
+                        let funFactsText = '💡 **Want to hear some fun facts?**\n\n';
+                        data.fun_facts.forEach((fact: string, index: number) => {
+                          funFactsText += `${index + 1}. ${fact}\n\n`;
+                        });
+                        
+                        const funFactsMessage: Message = {
+                          id: Date.now() + 3,
+                          type: 'text',
+                          text: funFactsText,
+                          sender: 'ai',
+                          timestamp: new Date()
+                        };
+                        
+                        setMessages(prev => [...prev, funFactsMessage]);
+                        setIsTyping(false);
+                      }, 1000);
+                    }, 1500);
+                  }
+                }, 1000);
+              }, 1500);
+            }
+          }, 1000);
+        }, 1500);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error displaying dish analysis:', error);
+      
+      const errorMessage: Message = {
+        id: Date.now(),
+        type: 'text',
+        text: "I received the analysis, but I'm having trouble displaying it. Please try again.",
+        sender: 'ai',
+        timestamp: new Date()
+      };
+      
+      setMessages([errorMessage]);
+      setIsTyping(false);
+    }
+  };
 
   // 处理 API 响应并分步发送消息
   const handleApiResponse = async (userMessage: string) => {
@@ -368,6 +480,122 @@ export function ChatPage() {
               {msg.type === 'text' ? (
                 <div className="message-content">
                   {msg.text && <FormattedText text={msg.text} />}
+                </div>
+              ) : msg.type === 'dish-card' && msg.dishData ? (
+                <div className="message-content dish-card-content">
+                  {/* 菜品名称 */}
+                  {msg.dishData.dish_name && (
+                    <div style={{ 
+                      marginBottom: '12px',
+                      fontFamily: '"SF Pro", -apple-system, BlinkMacSystemFont, sans-serif',
+                      fontSize: '16px',
+                      fontWeight: 700,
+                      color: '#FFF'
+                    }}>
+                      {msg.dishData.dish_name}
+                    </div>
+                  )}
+                  
+                  {/* 菜品图片 */}
+                  <div style={{ marginBottom: '12px' }}>
+                    <img 
+                      src={dishImg} 
+                      alt={msg.dishData.dish_name || 'Dish'} 
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        borderRadius: '12px',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  </div>
+                  
+                  {/* 菜品描述 */}
+                  {msg.dishData.dish_description && (
+                    <div style={{ marginBottom: '12px' }}>
+                      <FormattedText 
+                        text={`A dish featuring ${msg.dishData.dish_description.replace(
+                          /\b(chicken|Chicken)\b/gi,
+                          '**$1**'
+                        )}`}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Main Ingredients 框 */}
+                  {msg.dishData.ingredients && msg.dishData.ingredients.length > 0 && (
+                    <div style={{
+                      backgroundColor: '#051216',
+                      borderRadius: '12px',
+                      padding: '12px',
+                      marginBottom: '12px'
+                    }}>
+                      <div style={{ 
+                        fontFamily: '"SF Pro", -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontSize: '12px',
+                        color: '#D7D7D7',
+                        marginBottom: '6px'
+                      }}>
+                        Main Ingredients
+                      </div>
+                      <div style={{ 
+                        color: '#FFF',
+                        fontFamily: '"SF Pro", -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontSize: '12px',
+                        fontStyle: 'normal',
+                        fontWeight: 700,
+                        lineHeight: 'normal',
+                        letterSpacing: '0.12px'
+                      }}>
+                        {msg.dishData.ingredients.join(', ')}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Similar to 框 */}
+                  {msg.dishData.similar_dishes && msg.dishData.similar_dishes.length > 0 && (
+                    <div style={{
+                      backgroundColor: '#051216',
+                      borderRadius: '12px',
+                      padding: '12px',
+                      marginBottom: '12px'
+                    }}>
+                      <div style={{ 
+                        fontFamily: '"SF Pro", -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontSize: '12px',
+                        color: '#D7D7D7',
+                        marginBottom: '6px'
+                      }}>
+                        Similar to:
+                      </div>
+                      <div style={{ 
+                        color: '#FFF',
+                        fontFamily: '"SF Pro", -apple-system, BlinkMacSystemFont, sans-serif',
+                        fontSize: '12px',
+                        fontStyle: 'normal',
+                        fontWeight: 700,
+                        lineHeight: 'normal',
+                        letterSpacing: '0.12px'
+                      }}>
+                        It's similar to {msg.dishData.similar_dishes[0].dish_name}!
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* 过敏原警告 */}
+                  {msg.dishData.allergens && msg.dishData.allergens.length > 0 && (
+                    <div style={{
+                      color: '#FFF',
+                      fontFamily: '"SF Pro", -apple-system, BlinkMacSystemFont, sans-serif',
+                      fontSize: '12px',
+                      fontStyle: 'italic',
+                      fontWeight: 700,
+                      lineHeight: 'normal',
+                      letterSpacing: '0.12px'
+                    }}>
+                      <span style={{ color: '#00C1E8' }}>!</span> This contains {msg.dishData.allergens.join(' and ').toLowerCase()}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="message-content image-content">
