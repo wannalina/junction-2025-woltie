@@ -135,6 +135,27 @@
   word-wrap: break-word;
 }
 
+/* 图片消息样式 */
+.message-content.image-content {
+  padding: 16px 20px;
+  max-width: 80%;
+}
+
+.image-message-text {
+  margin-bottom: 12px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.message-image {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+}
+
 .message-bubble.user .message-content {
   background: linear-gradient(135deg, #00A9C5 0%, #0088A3 100%);
   color: white;

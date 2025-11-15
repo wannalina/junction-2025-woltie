@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { RestaurantCard } from '../components/RestaurantCard';
 import { PromotionBanner } from '../components/PromotionBanner';
 import { CartoonFloatButton } from '../components/CartoonFloatButton';
-import { NextPage } from './NextPage';
+import { WoltyPage } from './WoltyPage';
 import { Compass, Utensils, Store, Search, User } from 'lucide-react';
 
 export function Home() {
@@ -250,7 +250,7 @@ export function Home() {
       {!isDrawerOpen && <CartoonFloatButton onClick={() => setIsDrawerOpen(true)} />}
       
       {/* Drawer组件 */}
-      <NextPage isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+      <WoltyPage isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
       </div>
     </div>
   );

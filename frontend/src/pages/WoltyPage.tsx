@@ -5,14 +5,14 @@ import juhoIcon from '../assets/juho.svg';
 import cloudIcon from '../assets/cloud.png';
 import dumplingHouseImg from '../assets/dumping-house.png';
 import supportIcon from '../assets/support.png';
-import './NextPage.css';
+import './WoltyPage.css';
 
-interface NextPageProps {
+interface WoltyPageProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function NextPage({ isOpen, onClose }: NextPageProps) {
+export function WoltyPage({ isOpen, onClose }: WoltyPageProps) {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [isClosing, setIsClosing] = useState(false);

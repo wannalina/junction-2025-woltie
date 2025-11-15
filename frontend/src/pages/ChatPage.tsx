@@ -2,13 +2,17 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import avatarIcon from '../assets/avatar.svg';
 import juhoIcon from '../assets/juho.svg';
+import dumplingHouseImg from '../assets/dumping-house.png';
+import breadImg from '../assets/bread.png';
 import './ChatPage.css';
 
 interface Message {
   id: number;
-  text: string;
+  text?: string;
   sender: 'user' | 'ai';
   timestamp: Date;
+  type: 'text' | 'image';
+  imageUrl?: string;
 }
 
 export function ChatPage() {
@@ -48,7 +52,8 @@ export function ChatPage() {
         id: Date.now(),
         text: initialMessage,
         sender: 'user',
-        timestamp: new Date()
+        timestamp: new Date(),
+        type: 'text'
       };
       
       setMessages([userMessage]);
@@ -56,9 +61,10 @@ export function ChatPage() {
       
       // 1秒后显示AI回复
       setTimeout(() => {
+        const aiResponse = getAIResponse(initialMessage);
         const aiMessage: Message = {
           id: Date.now() + 1,
-          text: getAIResponse(initialMessage),
+          ...aiResponse,
           sender: 'ai',
           timestamp: new Date()
         };
@@ -70,7 +76,19 @@ export function ChatPage() {
   }, [initialMessage]);
 
   // 模拟AI回复
-  const getAIResponse = (userMessage: string): string => {
+  const getAIResponse = (userMessage: string): Omit<Message, 'id' | 'sender' | 'timestamp'> => {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // 如果询问位置、地图或附近，返回图片
+    if (lowerMessage.includes('near') || lowerMessage.includes('location') || lowerMessage.includes('where') || lowerMessage.includes('map')) {
+      return {
+        type: 'image',
+        text: "Here are some locations near you:",
+        imageUrl: dumplingHouseImg
+      };
+    }
+    
+    // 文本回复
     const responses = [
       "That sounds like karjalanpiirakka! It's a traditional Finnish pastry with rice filling. Would you like me to find places nearby where you can buy it?",
       "Based on your description, I believe you're looking for karjalanpiirakka (Karelian pastries). They're delicious! Let me help you find some.",
@@ -79,18 +97,21 @@ export function ChatPage() {
       "I found several great vegan options near your location. Would you like me to show you the closest ones?"
     ];
     
-    // 简单的关键词匹配
-    const lowerMessage = userMessage.toLowerCase();
+    let responseText: string;
     if (lowerMessage.includes('karjalan') || lowerMessage.includes('finnish') || lowerMessage.includes('pastry')) {
-      return responses[0];
+      responseText = responses[0];
     } else if (lowerMessage.includes('restaurant') || lowerMessage.includes('helsinki')) {
-      return responses[3];
+      responseText = responses[3];
     } else if (lowerMessage.includes('vegan')) {
-      return responses[4];
+      responseText = responses[4];
+    } else {
+      responseText = responses[Math.floor(Math.random() * 3)];
     }
     
-    // 默认随机回复
-    return responses[Math.floor(Math.random() * 3)];
+    return {
+      type: 'text',
+      text: responseText
+    };
   };
 
   // 发送消息
@@ -101,7 +122,8 @@ export function ChatPage() {
         id: Date.now(),
         text: message,
         sender: 'user',
-        timestamp: new Date()
+        timestamp: new Date(),
+        type: 'text'
       };
       
       const currentMessage = message;
@@ -113,9 +135,10 @@ export function ChatPage() {
       
       // 1秒后显示AI回复
       setTimeout(() => {
+        const aiResponse = getAIResponse(currentMessage);
         const aiMessage: Message = {
           id: Date.now() + 1,
-          text: getAIResponse(currentMessage),
+          ...aiResponse,
           sender: 'ai',
           timestamp: new Date()
         };
@@ -161,13 +184,26 @@ export function ChatPage() {
       <div className="chat-page-content" ref={chatContentRef}>
         <div className="messages-container">
           {messages.map((msg) => (
-            <div key={msg.id} className={`message-bubble ${msg.sender}`}>
+            <div key={msg.id} className={`message-bubble ${msg.sender} ${msg.type === 'image' ? 'image-message' : ''}`}>
               {msg.sender === 'ai' && (
                 <img src={juhoIcon} alt="Juho" className="message-avatar ai-avatar" />
               )}
-              <div className="message-content">
-                {msg.text}
-              </div>
+              {msg.type === 'text' ? (
+                <div className="message-content">
+                  {msg.text}
+                </div>
+              ) : (
+                <div className="message-content image-content">
+                  {msg.text && <div className="image-message-text">{msg.text}</div>}
+                  {msg.imageUrl && (
+                    <img 
+                      src={msg.imageUrl} 
+                      alt="Message image" 
+                      className="message-image"
+                    />
+                  )}
+                </div>
+              )}
               {msg.sender === 'user' && (
                 <img src={avatarIcon} alt="User" className="message-avatar" />
               )}
@@ -193,10 +229,44 @@ export function ChatPage() {
         {/* 操作按钮 */}
         {messages.length > 0 && (
           <div className="action-buttons">
-            <button className="action-button">
+            <button 
+              className="action-button"
+              onClick={() => {
+                setIsTyping(true);
+                setTimeout(() => {
+                  const aiMessage: Message = {
+                    id: Date.now(),
+                    type: 'image',
+                    text: "Here are some locations near you:",
+                    imageUrl: dumplingHouseImg,
+                    sender: 'ai',
+                    timestamp: new Date()
+                  };
+                  setMessages(prev => [...prev, aiMessage]);
+                  setIsTyping(false);
+                }, 1000);
+              }}
+            >
               Find locations near me
             </button>
-            <button className="action-button">
+            <button 
+              className="action-button"
+              onClick={() => {
+                setIsTyping(true);
+                setTimeout(() => {
+                  const aiMessage: Message = {
+                    id: Date.now(),
+                    type: 'image',
+                    text: "Karjalanpiirakka is a traditional Finnish pastry filled with rice porridge. It's a beloved national dish, typically served with egg butter (munavoi). These oval-shaped pastries have a thin rye crust and are perfect for breakfast or as a snack!",
+                    imageUrl: breadImg,
+                    sender: 'ai',
+                    timestamp: new Date()
+                  };
+                  setMessages(prev => [...prev, aiMessage]);
+                  setIsTyping(false);
+                }, 1000);
+              }}
+            >
               Learn more
             </button>
           </div>
