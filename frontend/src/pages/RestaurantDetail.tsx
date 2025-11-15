@@ -1,21 +1,31 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Heart, Search, Plus } from 'lucide-react';
+import { ArrowLeft, Heart, Search, Plus, Minus, X } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { motion } from 'motion/react';
+import { CartoonFloatButton } from '../components/CartoonFloatButton';
+import { ScanningAnimation } from '../components/ScanningAnimation';
 
 export function RestaurantDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [isScanning, setIsScanning] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('full');
+  const [isPressed, setIsPressed] = useState(false);
+  const longPressTimer = useRef<number | null>(null);
 
   // Mock data - in a real app, you would fetch this from an API based on the id
   const restaurantData: Record<string, any> = {
-    'kiven-grilli': {
-      name: 'Kiven Grilli',
-      description: 'Delicious grilled delicacies',
+    'kund-food-panda': {
+      name: 'Kund Food Panda Entresse',
+      description: 'Authentic Asian cuisine',
       price: '€1.99',
       time: '20-30 min',
       rating: '8.2',
-      image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&h=300&fit=crop',
-      fullDescription: 'Experience the best grilled food in town. Our signature dishes are prepared with fresh ingredients and traditional recipes.',
-      address: '123 Main Street, Helsinki',
+      image: '/kung-food-panda.jpeg',
+      fullDescription: 'Experience authentic Asian flavors with our carefully crafted dishes. Fresh ingredients and traditional cooking methods.',
+      address: 'Entresse Shopping Center, Espoo',
       phone: '+358 40 123 4567',
     },
     'ravintola-nepal': {
@@ -62,6 +72,61 @@ export function RestaurantDetail() {
       address: '555 Burger Boulevard, Helsinki',
       phone: '+358 40 555 6666',
     },
+    'pizza-palace': {
+      name: 'Pizza Palace Helsinki',
+      description: 'Italian pizza & pasta',
+      price: '€2.49',
+      time: '25-30 min',
+      rating: '9.1',
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=300&fit=crop',
+      fullDescription: 'Authentic Italian pizzas baked in a traditional wood-fired oven. Fresh ingredients and homemade pasta daily.',
+      address: '123 Pizza Street, Helsinki',
+      phone: '+358 40 777 8888',
+    },
+    'veggie-delight': {
+      name: 'Veggie Delight',
+      description: 'Healthy vegan & vegetarian',
+      price: '€1.79',
+      time: '20-25 min',
+      rating: '8.9',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=300&fit=crop',
+      fullDescription: 'Plant-based paradise offering delicious vegan and vegetarian dishes. Organic ingredients and sustainable practices.',
+      address: '789 Green Avenue, Helsinki',
+      phone: '+358 40 999 0000',
+    },
+    'mediterranean-grill': {
+      name: 'Mediterranean Grill',
+      description: 'Greek & Turkish specialties',
+      price: '€2.29',
+      time: '30-35 min',
+      rating: '8.7',
+      image: 'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=500&h=300&fit=crop',
+      fullDescription: 'Experience the flavors of the Mediterranean with our grilled meats, fresh salads, and traditional mezze.',
+      address: '456 Mediterranean Way, Helsinki',
+      phone: '+358 40 111 3333',
+    },
+    'thai-house': {
+      name: 'Thai House Espoo',
+      description: 'Authentic Thai cuisine',
+      price: '€1.99',
+      time: '25-30 min',
+      rating: '9.3',
+      image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&h=300&fit=crop',
+      fullDescription: 'Traditional Thai flavors with perfectly balanced sweet, sour, salty, and spicy notes. Chef-prepared with imported spices.',
+      address: '321 Thai Street, Espoo',
+      phone: '+358 40 222 4444',
+    },
+    'seoul-kitchen': {
+      name: 'Seoul Kitchen',
+      description: 'Korean BBQ & kimchi',
+      price: '€2.99',
+      time: '35-40 min',
+      rating: '8.6',
+      image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&h=300&fit=crop',
+      fullDescription: 'Authentic Korean cuisine featuring BBQ, bibimbap, and traditional banchan. Family recipes from Seoul.',
+      address: '654 Korean Avenue, Helsinki',
+      phone: '+358 40 333 5555',
+    },
   };
 
   const restaurant = restaurantData[id || ''];
@@ -69,17 +134,63 @@ export function RestaurantDetail() {
   const mostOrderedItems = [
     {
       id: 1,
-      name: 'Butter Chicken',
-      image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400&h=400&fit=crop',
-      price: '€12.50'
+      name: 'Zhong Quan-kanaa',
+      image: '/dish.jpeg',
+      price: 15.90,
+      description: 'kana, suola, sokeri, sambal chili, soja kastike, inkivääri, Perunajauhe.',
+      shortDescription: 'kana, suola ,sokeri, sambal chili, soja kastike, inkivääri , Perunajauhe.',
+      ingredients: 'Chicken, Salt, Sugar, Sambal Chili, soya sauce, Ginger, Potato flour'
     },
     {
       id: 2,
-      name: 'Tikka Masala',
-      image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&h=400&fit=crop',
-      price: '€11.90'
+      name: 'Crispy chili -kanaa 🌶 (G)',
+      image: '/chicken.jpeg',
+      price: 16.90,
+      description: 'Marinoidut kana palat kermainen tomaatti kastike, intialaiset mausteet.',
+      shortDescription: 'Friteerattua kanaa, sweet chili- kastiketta',
+      ingredients: 'Chicken, Yogurt, Tomato, Cream, Garam Masala, Cumin, Coriander'
     }
   ];
+
+  const handleItemClick = (item: any) => {
+    // Scroll to top to show search bar
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setSelectedItem(item);
+    setQuantity(1);
+    setSelectedOption('full');
+  };
+
+  const handleCloseModal = () => {
+    setSelectedItem(null);
+    setQuantity(1);
+    setSelectedOption('full');
+  };
+
+  const handleAddToCart = () => {
+    // Add to cart logic here
+    console.log(`Added ${quantity} x ${selectedItem.name} to cart`);
+    handleCloseModal();
+  };
+
+  const handleLongPressStart = () => {
+    setIsPressed(true);
+    longPressTimer.current = window.setTimeout(() => {
+      setIsScanning(true);
+      // Navigate to AI scanner after 3 seconds of scanning
+      setTimeout(() => {
+        navigate('/ai-scanner');
+        setIsScanning(false);
+        setIsPressed(false);
+      }, 3000);
+    }, 500); // Long press duration
+  };
+
+  const handleLongPressEnd = () => {
+    setIsPressed(false);
+    if (longPressTimer.current && !isScanning) {
+      clearTimeout(longPressTimer.current);
+    }
+  };
 
   if (!restaurant) {
     return (
@@ -99,10 +210,10 @@ export function RestaurantDetail() {
 
   return (
     <div className="w-full min-h-screen bg-black text-white flex justify-center">
-      <div className="w-full max-w-md lg:max-w-lg min-h-screen bg-black relative lg:shadow-2xl pb-24">
+      <div className="w-full min-h-screen bg-black relative pb-24">
         
         {/* Hero Image with Search Bar */}
-        <div className="relative h-[240px]">
+        <div className="relative h-[200px]">
           <img
             src={restaurant.image}
             alt={restaurant.name}
@@ -130,7 +241,7 @@ export function RestaurantDetail() {
         </div>
 
         {/* Restaurant Info Section */}
-        <div className="bg-black px-4 py-5 rounded-t-[40px] -mt-12 relative z-10">
+        <div className="bg-black px-4 py-4 rounded-t-[32px] -mt-10 relative z-10">
           <h1 className="text-xl font-bold mb-2 text-center">{restaurant.name}</h1>
           
           {/* Rating and Status */}
@@ -212,18 +323,31 @@ export function RestaurantDetail() {
             
             <div className="grid grid-cols-2 gap-3">
               {mostOrderedItems.map((item) => (
-                <div key={item.id} className="relative bg-zinc-900 rounded-xl overflow-hidden">
+                <div 
+                  key={item.id} 
+                  className="relative bg-zinc-900 rounded-xl overflow-hidden cursor-pointer hover:bg-zinc-800 transition-colors"
+                  onClick={() => handleItemClick(item)}
+                >
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-full h-28 object-cover"
+                    className="w-full h-24 object-cover"
                   />
-                  <button className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center hover:scale-110 transition-transform" style={{ backgroundColor: '#009FE6' }}>
-                    <Plus className="w-4 h-4 text-white" />
-                  </button>
+                  {/* Small curved background with plus button */}
+                  <div className="absolute top-0 right-0 w-10 h-10 rounded-bl-[64px] flex items-center justify-center" style={{ backgroundColor: '#133842' }}>
+                    <button 
+                      className="w-8 h-8 flex items-center justify-center hover:scale-110 transition-transform -translate-y-0.5 translate-x-0.5"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleItemClick(item);
+                      }}
+                    >
+                      <Plus className="w-5 h-5" style={{ color: '#009FE6' }} strokeWidth={2.5} />
+                    </button>
+                  </div>
                   <div className="p-2.5">
                     <p className="text-xs font-medium">{item.name}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">{item.price}</p>
+                    <p className="text-[10px] text-gray-400 mt-0.5">€{item.price.toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -232,7 +356,7 @@ export function RestaurantDetail() {
         </div>
 
         {/* Fixed Bottom Schedule Button */}
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[calc(28rem-2rem)] lg:max-w-[calc(32rem-2rem)] z-50">
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] z-50">
           <button className="w-full text-black py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-2xl" style={{ backgroundColor: '#009FE6' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0088CC'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#009FE6'}>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -243,6 +367,186 @@ export function RestaurantDetail() {
             </div>
           </button>
         </div>
+
+        {/* Bottom Sheet Modal */}
+        {selectedItem && (
+          <>
+            {/* Overlay */}
+            <div 
+              className="fixed inset-0 bg-black/60 z-50 transition-opacity duration-300"
+              style={{ animation: 'fadeIn 0.3s ease-out' }}
+              onClick={handleCloseModal}
+            ></div>
+            
+            {/* Bottom Sheet */}
+            <div 
+              className="fixed bottom-0 left-0 right-0 bg-[#1a1a1a] rounded-t-[20px] z-50 h-[calc(100vh-60px)] overflow-y-auto shadow-2xl"
+              style={{ animation: 'slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }}
+            >
+              <div className="w-full mx-auto">
+                {/* Handle Bar */}
+                <div className="flex justify-center pt-3 pb-2">
+                  <div className="w-10 h-1 bg-gray-600 rounded-full"></div>
+                </div>
+
+                {/* Close Button */}
+                <div className="absolute top-4 right-4 z-10">
+                  <button 
+                    onClick={handleCloseModal}
+                    className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-zinc-700 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Dish Image */}
+                <div className="px-4 pb-4 relative">
+                  <img
+                    src={selectedItem.image}
+                    alt={selectedItem.name}
+                    className="w-full h-48 object-cover rounded-[20px] cursor-pointer transition-opacity"
+                    onMouseDown={handleLongPressStart}
+                    onMouseUp={handleLongPressEnd}
+                    onMouseLeave={handleLongPressEnd}
+                    onTouchStart={handleLongPressStart}
+                    onTouchEnd={handleLongPressEnd}
+                  />
+                  
+                  {/* Visual feedback for press */}
+                  {isPressed && !isScanning && (
+                    <motion.div
+                      initial={{ scale: 1, opacity: 0.5 }}
+                      animate={{ scale: 1.05, opacity: 0.4 }}
+                      className="absolute top-6 left-8 right-8 bottom-12 rounded-[20px] bg-cyan-400 blur-sm pointer-events-none"
+                    />
+                  )}
+                  
+                  {/* Cartoon Float Button on image */}
+                  <div className="absolute bottom-[-50px] right-[5px] scale-[1]">
+                    <CartoonFloatButton />
+                  </div>
+                  
+                  {/* Scanning animation overlay on the image */}
+                  {isScanning && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-[20px]"
+                    >
+                      <div className="scale-75">
+                        <ScanningAnimation dishImage={selectedItem.image} />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Dish Info */}
+                <div className="px-6 pb-4 text-left">
+                  <h2 className="text-[24px] font-bold mb-3 text-white text-left">{selectedItem.name}</h2>
+                  
+                  {/* Price */}
+                  <div className="flex items-center justify-between mb-6">
+                    <p className="text-xl font-bold text-left" style={{ color: '#009FE6' }}>
+                      {selectedItem.price.toFixed(2).replace('.', ',')} €
+                    </p>
+                    <button className="w-8 h-8 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-gray-300 mb-2 leading-relaxed text-left">{selectedItem.description}</p>
+                  
+                  {/* Ingredients */}
+                  <p className="text-sm text-gray-400 mb-6 leading-relaxed text-left">{selectedItem.ingredients}</p>
+
+                  {/* Options Section */}
+                  <div className="mb-6 text-left">
+                    <h3 className="text-base font-bold mb-1 text-white text-left">Lisuke samaan boksiin?</h3>
+                    <p className="text-[11px] text-gray-400 mb-3 text-left">Valitse vähintään yksi</p>
+                    
+                    {/* Option 1 */}
+                    <button
+                      onClick={() => setSelectedOption('full')}
+                      className="w-full flex items-center justify-between p-4 mb-3 rounded-xl bg-[#242424] hover:bg-[#2a2a2a] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          selectedOption === 'full' 
+                            ? 'border-[#009FE6] bg-[#009FE6]' 
+                            : 'border-gray-500'
+                        }`}>
+                          {selectedOption === 'full' && (
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-[13px] text-white text-left">Koko boksi täyteen pääruokaa</span>
+                      </div>
+                      <span className="text-[13px] text-white text-left">+ 1,00 €</span>
+                    </button>
+
+                    {/* Option 2 */}
+                    <button
+                      onClick={() => setSelectedOption('half')}
+                      className="w-full flex items-center justify-between p-4 rounded-xl bg-[#242424] hover:bg-[#2a2a2a] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                          selectedOption === 'half' 
+                            ? 'border-[#009FE6] bg-[#009FE6]' 
+                            : 'border-gray-500'
+                        }`}>
+                          {selectedOption === 'half' && (
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-[13px] text-white text-left">50% / 50% pääruokaa ja lisuketta</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Bottom Action Bar */}
+                <div className="sticky bottom-0 bg-[#1a1a1a] px-6 py-4 border-t border-gray-800">
+                  <div className="flex items-center gap-3">
+                    {/* Quantity Selector */}
+                    <div className="flex items-center gap-2 bg-[#0d3540] rounded-xl px-3 py-2">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="w-8 h-8 flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-30"
+                        disabled={quantity <= 1}
+                      >
+                        <Minus className="w-4 h-4 text-white" strokeWidth={3} />
+                      </button>
+                      <span className="text-lg font-bold text-white w-8 text-center">{quantity}</span>
+                      <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="w-8 h-8 flex items-center justify-center hover:opacity-80 transition-opacity"
+                      >
+                        <Plus className="w-4 h-4 text-white" strokeWidth={3} />
+                      </button>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex-1 py-3.5 rounded-xl font-bold text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg text-base"
+                      style={{ backgroundColor: '#009FE6' }}
+                    >
+                      Lisää tilaukseen {((selectedItem.price + (selectedOption === 'full' ? 1 : 0)) * quantity).toFixed(2).replace('.', ',')} €
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

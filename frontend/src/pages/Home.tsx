@@ -51,15 +51,15 @@ export function Home() {
 
   const restaurants = [
     {
-      id: 'kiven-grilli',
-      name: 'Kiven Grilli',
-      description: 'Delicious grilled delicacies...',
+      id: 'kund-food-panda',
+      name: 'Kund Food Panda Entresse',
+      description: 'Authentic Asian cuisine...',
       price: '€1.99',
       time: '20-30 min',
       rating: '8.2',
       sponsored: true,
       badge: 'W+',
-      image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&h=300&fit=crop'
+      image: '/kung-food-panda.jpeg'
     },
     {
       id: 'ravintola-nepal',
@@ -101,6 +101,61 @@ export function Home() {
       rating: '9.2',
       sponsored: false,
       image: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&h=300&fit=crop'
+    }
+  ];
+
+  const allRestaurants = [
+    {
+      id: 'pizza-palace',
+      name: 'Pizza Palace Helsinki',
+      description: 'Italian pizza & pasta...',
+      price: '€2.49',
+      time: '25-30 min',
+      rating: '9.1',
+      sponsored: false,
+      image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=300&fit=crop'
+    },
+    {
+      id: 'veggie-delight',
+      name: 'Veggie Delight',
+      description: 'Healthy vegan & vegetarian...',
+      price: '€1.79',
+      time: '20-25 min',
+      rating: '8.9',
+      sponsored: true,
+      badge: 'W+',
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=300&fit=crop'
+    },
+    {
+      id: 'mediterranean-grill',
+      name: 'Mediterranean Grill',
+      description: 'Greek & Turkish specialties...',
+      price: '€2.29',
+      time: '30-35 min',
+      rating: '8.7',
+      sponsored: false,
+      image: 'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?w=500&h=300&fit=crop'
+    },
+    {
+      id: 'thai-house',
+      name: 'Thai House Espoo',
+      description: 'Authentic Thai cuisine...',
+      price: '€1.99',
+      time: '25-30 min',
+      rating: '9.3',
+      sponsored: true,
+      badge: 'W+',
+      image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=500&h=300&fit=crop'
+    },
+    {
+      id: 'seoul-kitchen',
+      name: 'Seoul Kitchen',
+      description: 'Korean BBQ & kimchi...',
+      price: '€2.99',
+      time: '35-40 min',
+      rating: '8.6',
+      sponsored: false,
+      image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&h=300&fit=crop'
     }
   ];
 
@@ -191,7 +246,7 @@ export function Home() {
         </div>
 
         <div className="flex gap-3 overflow-x-auto no-scrollbar">
-          {restaurants.map((restaurant) => (
+          {allRestaurants.map((restaurant) => (
             <RestaurantCard
               key={restaurant.id}
               id={restaurant.id}

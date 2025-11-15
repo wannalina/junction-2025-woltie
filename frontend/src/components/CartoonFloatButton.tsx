@@ -18,7 +18,7 @@ export function CartoonFloatButton({ onClick }: CartoonFloatButtonProps) {
       </div>
       
       {/* 文字提示 */}
-      <div className="tooltip-text">点我继续</div>
+      <div className="tooltip-text">Press the photo!</div>
     </div>
   );
 }

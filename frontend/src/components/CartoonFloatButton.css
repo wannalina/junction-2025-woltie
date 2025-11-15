@@ -36,18 +36,34 @@
 
 .tooltip-text {
   position: absolute;
-  bottom: -25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
+  bottom: 40%;
+  right: 100%;
+  transform: translateY(50%);
+  background: #1a2832;
   color: white;
-  padding: 4px 12px;
+  padding: 8px 14px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 600;
   white-space: nowrap;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.3s ease;
   pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* 对话框气泡箭头 */
+.tooltip-text::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 12px solid #1a2832;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
 }
 
 .cartoon-float-button-wrapper:hover .tooltip-text {
