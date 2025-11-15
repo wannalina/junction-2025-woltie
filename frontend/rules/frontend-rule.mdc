@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+
+- Always design with mobile style and size,we use 402*847 no need to be compatible with PC size
+- If possible, give priority to using existing libraries and tailwindcss for development
