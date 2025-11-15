@@ -7,9 +7,9 @@
  */
 import type {
     DishSuggestionRequest,
-    DishSuggestionResponse,
     DishAnalysisResponse,
     ApiErrorResponse,
+    DishRecognitionResponse,
 } from './types';
 import { API_BASE_URL, API_ENDPOINTS, DEFAULT_HEADERS, REQUEST_TIMEOUT } from './apiConfig';
 
