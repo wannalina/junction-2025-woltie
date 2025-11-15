@@ -1,10 +1,6 @@
-import { useNavigate } from 'react-router-dom';
-import { FloatButton } from 'antd';
-import { RightOutlined } from '@ant-design/icons';
+import { CartoonFloatButton } from '../components/CartoonFloatButton';
 
 export function Home() {
-  const navigate = useNavigate();
-
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <img 
@@ -13,14 +9,8 @@ export function Home() {
         className="w-full h-full object-cover" 
       />
       
-      {/* Ant Design 悬浮按钮 */}
-      <FloatButton
-        icon={<RightOutlined />}
-        type="primary"
-        style={{ right: 24, bottom: 24 }}
-        onClick={() => navigate('/next')}
-        tooltip="下一页"
-      />
+      {/* 卡通悬浮按钮 */}
+      <CartoonFloatButton />
     </div>
   );
 }

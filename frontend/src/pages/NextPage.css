@@ -1,0 +1,447 @@
+.chat-assistant-page {
+  min-height: 100vh;
+  height: 100vh;
+  background: radial-gradient(92.07% 50% at 50% 50%, #00819C 0%, #004C5C 36.16%, #001D23 72.06%);
+  display: flex;
+  flex-direction: column;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 状态栏 */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.signal-bars span {
+  width: 3px;
+  background: white;
+  border-radius: 1px;
+}
+
+.signal-bars span:nth-child(1) { height: 25%; }
+.signal-bars span:nth-child(2) { height: 50%; }
+.signal-bars span:nth-child(3) { height: 75%; }
+.signal-bars span:nth-child(4) { height: 100%; }
+
+.status-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.battery-icon {
+  width: 28px;
+  height: 14px;
+  border: 2px solid white;
+  border-radius: 3px;
+  padding: 2px;
+  position: relative;
+}
+
+.battery-icon::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 4px;
+  width: 2px;
+  height: 6px;
+  background: white;
+  border-radius: 0 2px 2px 0;
+}
+
+.battery-level {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 1px;
+}
+
+/* 主内容区 */
+.chat-content {
+  flex: 1;
+  padding: 16px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 100px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat-content::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+/* 问候头部 */
+.greeting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 47px;
+}
+
+.greeting-text {
+  font-size: 36px;
+  font-weight: 300;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* 卡片网格 */
+.cards-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-template-rows: auto auto !important;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 16px;
+  transition: transform 0.2s, background 0.2s;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 天气卡片 - 左边占2行 */
+.weather-card {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weather-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.temperature {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.weather-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.weather-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.restaurant-preview {
+  position: relative;
+  margin-top: auto;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.restaurant-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+}
+
+.restaurant-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.restaurant-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+}
+
+.restaurant-distance {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.price-indicator {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Rewards 卡片 - 右上 */
+.rewards-card {
+  grid-column: 2;
+  grid-row: 1;
+  background: linear-gradient(135deg, rgba(74, 158, 255, 0.2) 0%, rgba(74, 158, 255, 0.05) 100%);
+  position: relative;
+  overflow: visible;
+}
+
+/* Support 卡片 - 右下 */
+.support-card {
+  grid-column: 2;
+  grid-row: 2;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.wolty-mascot {
+  position: absolute;
+  top: -35px;
+  right: -10px;
+  width: 60px;
+  height: 60px;
+  filter: drop-shadow(0 4px 12px rgba(74, 158, 255, 0.4));
+  z-index: 10;
+}
+
+.card-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.support-icon {
+  width: 40px;
+  height: 40px;
+}
+
+/* 搜索建议 */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.suggestion-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 18px;
+  padding: 14px 16px;
+  color: white;
+  font-size: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.suggestion-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.suggestion-text {
+  flex: 1;
+}
+
+.edit-icon {
+  color: #4A9EFF;
+  flex-shrink: 0;
+}
+
+/* 最近搜索 */
+.recent-section {
+  margin-bottom: 20px;
+}
+
+.recent-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+}
+
+.recent-items {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.recent-items::-webkit-scrollbar {
+  display: none;
+}
+
+.recent-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  color: #4A9EFF;
+  font-size: 13px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.recent-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* 底部输入框 */
+.message-input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  background: linear-gradient(to top, #001D23 70%, rgba(0, 29, 35, 0.95) 90%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.message-input-container::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  background: white;
+  border-radius: 100px;
+  opacity: 0.3;
+}
+
+.message-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 14px 55px 14px 20px;
+  color: white;
+  font-size: 15px;
+  outline: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.message-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.message-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.voice-button {
+  position: absolute;
+  right: 32px;
+  top: 24px;
+  background: transparent;
+  border: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.voice-button:hover {
+  opacity: 0.8;
+}
+
+.voice-button svg {
+  opacity: 0.8;
+}
+
+/* 响应式设计 - 只在非常小的屏幕才切换到垂直布局 */
+@media (max-width: 400px) {
+  .greeting-text {
+    font-size: 32px;
+  }
+  
+  .user-avatar {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .cards-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+  
+  .weather-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  
+  .rewards-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  
+  .support-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
+
