@@ -8,7 +8,6 @@
 import type {
     DishSuggestionRequest,
     DishSuggestionResponse,
-    DishAnalysisRequest,
     DishAnalysisResponse,
     ApiErrorResponse,
 } from './types';
@@ -148,21 +147,7 @@ class WoltieApiService {
    * @param request - 包含菜品标题、描述、图片等信息
    * @returns 详细的菜品分析结果
    */
-  async analyzeDish(request: DishAnalysisRequest): Promise<DishAnalysisResponse> {
-    // 验证必填字段
-    if (!request.title?.trim()) {
-      throw new ApiError(400, 'Validation Error', 'Title is required');
-    }
-    if (!request.description?.trim()) {
-      throw new ApiError(400, 'Validation Error', 'Description is required');
-    }
-    if (!request.image_url && !request.image_base64) {
-      throw new ApiError(400, 'Validation Error', 'Either image_url or image_base64 must be provided');
-    }
-    if (request.image_url && request.image_base64) {
-      throw new ApiError(400, 'Validation Error', 'Please provide either image_url or image_base64, not both');
-    }
-
+  async analyzeDish(): Promise<DishAnalysisResponse> {
     const url = `${this.baseUrl}${API_ENDPOINTS.ANALYZE_DISH}`;
     const response = await fetchWithTimeout(url, {
       method: 'GET',
