@@ -209,8 +209,9 @@ export function RestaurantDetail() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-black text-white flex justify-center">
-      <div className="w-full min-h-screen bg-black relative pb-24">
+    <div className="w-full min-h-screen bg-black text-white flex justify-center relative">
+      {/* Main content with conditional blur when scanning in modal */}
+      <div className={`w-full min-h-screen bg-black relative pb-24 transition-all duration-300 ${selectedItem && isScanning ? 'blur-sm' : ''}`}>
         
         {/* Hero Image with Search Bar */}
         <div className="relative h-[200px]">
@@ -385,12 +386,12 @@ export function RestaurantDetail() {
             >
               <div className="w-full mx-auto">
                 {/* Handle Bar */}
-                <div className={`flex justify-center pt-3 pb-2 transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                <div className={`flex justify-center pt-3 pb-2 transition-all duration-300 ${isScanning ? 'blur-sm' : ''}`}>
                   <div className="w-10 h-1 bg-gray-600 rounded-full"></div>
                 </div>
 
                 {/* Close Button */}
-                <div className={`absolute top-4 right-4 z-10 transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                <div className={`absolute top-4 right-4 z-10 transition-all duration-300 ${isScanning ? 'blur-sm' : ''}`}>
                   <button 
                     onClick={handleCloseModal}
                     className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center hover:bg-zinc-700 transition-colors"
@@ -404,7 +405,7 @@ export function RestaurantDetail() {
                   <img
                     src={selectedItem.image}
                     alt={selectedItem.name}
-                    className={`w-full h-48 object-cover rounded-[20px] cursor-pointer transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}
+                    className={`w-full h-48 object-cover rounded-[20px] cursor-pointer transition-all duration-300 ${isScanning ? 'blur-sm' : ''}`}
                     onMouseDown={handleLongPressStart}
                     onMouseUp={handleLongPressEnd}
                     onMouseLeave={handleLongPressEnd}
@@ -422,26 +423,13 @@ export function RestaurantDetail() {
                   )}
                   
                   {/* Cartoon Float Button on image */}
-                  <div className={`absolute bottom-[-50px] right-[5px] scale-[1] transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                  <div className={`absolute bottom-[-50px] right-[5px] scale-[1] transition-all duration-300 ${isScanning ? 'blur-sm' : ''}`}>
                     <CartoonFloatButton showTooltip={true} />
                   </div>
-                  
-                  {/* Scanning animation in center of image */}
-                  {isScanning && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="absolute inset-0 flex items-center justify-center z-50"
-                    >
-                      <div className="scale-75">
-                        <ScanningAnimation dishImage={selectedItem.image} />
-                      </div>
-                    </motion.div>
-                  )}
                 </div>
 
                 {/* Dish Info */}
-                <div className={`px-6 pb-4 text-left transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                <div className={`px-6 pb-4 text-left transition-all duration-300 ${isScanning ? 'blur-sm' : ''}`}>
                   <h2 className="text-[24px] font-bold mb-3 text-white text-left">{selectedItem.name}</h2>
                   
                   {/* Price */}
@@ -504,7 +492,7 @@ export function RestaurantDetail() {
                 </div>
 
                 {/* Bottom Action Bar */}
-                <div className={`sticky bottom-0 bg-[#1a1a1a] px-3 py-2 transition-all duration-300 ${isScanning ? 'blur-md' : ''}`}>
+                <div className={`sticky bottom-0 bg-[#1a1a1a] px-3 py-2 transition-all duration-300 ${isScanning ? 'blur-sm' : ''}`}>
                   <div className="flex items-stretch gap-2">
                     {/* Quantity Selector */}
                     <div className="flex items-center gap-2 bg-[#1e3a47] rounded-lg px-3 py-2">
@@ -537,9 +525,28 @@ export function RestaurantDetail() {
                 </div>
               </div>
             </div>
+            
           </>
         )}
       </div>
+      
+      {/* Scanning animation - outside all blur effects, in outermost container */}
+      {selectedItem && isScanning && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed z-[100] pointer-events-none"
+          style={{ 
+            top: '100px',
+            left: '50%',
+            transform: 'translate(-50%, 0)'
+          }}
+        >
+          <div className="scale-75">
+            <ScanningAnimation dishImage={selectedItem.image} />
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
