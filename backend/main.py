@@ -14,14 +14,14 @@ dish_service = DishSuggestionService()
 async def root():
     return {"message": "Woltie API", "status": "running"}
 
-
+# endpoint for getting dish suggestion based on user description
 @app.post("/api/suggest-dish", response_model=DishSuggestionResponse)
 async def suggest_dish(request: DishSuggestionRequest):
     try:
         if not request.description or not request.description.strip():
             raise HTTPException(status_code=400, detail="Description is required")
 
-        # identify the dish from description using Gemini
+        # identify the dish from description
         dish_info = await dish_service.identify_dish_from_description(
             request.description
         )
@@ -32,7 +32,7 @@ async def suggest_dish(request: DishSuggestionRequest):
             request.location
         )
 
-        # return response
+        # return dish name, description, nearby restaurants, and confidence score
         return DishSuggestionResponse(
             dish_name=dish_info.get("dish_name", "Unknown Dish"),
             dish_description=dish_info.get("dish_description"),

@@ -1,6 +1,6 @@
 import os
 import json
-from typing import List, Optional
+from typing import Optional
 from google.cloud import vision
 from google.oauth2 import service_account
 import google.generativeai as genai
@@ -11,23 +11,22 @@ from models import RestaurantRecommendation
 load_dotenv()
 
 
-class DishSuggestionService:
+class InitializeGoogleCloudServices:
     def __init__(self):
-        # get credentials path from environment or use default
+        # get credentials path from env
         credentials_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-                
-        # initialize credentials if file exists
+
+        # initialize credentials
         credentials = None
         if credentials_path and os.path.exists(credentials_path):
             try:
                 credentials = service_account.Credentials.from_service_account_file(
                     credentials_path
                 )
-                # set as default for all Google Cloud clients
                 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
             except Exception as e:
                 print(f"Warning: Failed to load credentials from {credentials_path}: {e}")
-        
+                
         # initialize Vision API client
         try:
             if credentials:
@@ -44,20 +43,25 @@ class DishSuggestionService:
             genai.configure(api_key=api_key)
             self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
         elif credentials:
-            # use service account credentials for Gemini
             try:
                 self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
             except Exception as e:
                 print(f"Warning: Gemini initialization with credentials failed: {e}")
                 self.gemini_model = None
         else:
-            # try default credentials (for Cloud Run)
             try:
                 self.gemini_model = genai.GenerativeModel('gemini-1.5-flash')
             except Exception as e:
                 print(f"Warning: Gemini initialization failed: {e}")
                 self.gemini_model = None
-    
+
+
+# service to name dish and suggest nearby restaurants based on user description
+class DishSuggestionService(InitializeGoogleCloudServices):    
+    def __init__(self):
+        # call parent class to init google cloud services
+        super().__init__()    
+
     # use Gemini Flash to identify dish name from description
     async def identify_dish_from_description(self, description: str):
         if not self.gemini_model:
