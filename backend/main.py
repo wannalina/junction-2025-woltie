@@ -26,10 +26,10 @@ async def suggest_dish(request: DishSuggestionRequest):
             request.description
         )
 
-        # get restaurant recommendations
+        # get restaurant recommendations with user's location
         restaurants = await dish_service.get_restaurant_recommendations(
             dish_info.get("dish_name", ""),
-            request.location
+            request.location,
         )
 
         # return dish name, description, nearby restaurants, and confidence score

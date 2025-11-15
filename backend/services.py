@@ -98,7 +98,6 @@ class DishSuggestionService(InitializeGoogleCloudServices):
 
             # parse response
             response_text = response.text.strip()
-            print("RESPONSE\n\n", response_text)
             if response_text.startswith("```json"):
                 response_text = response_text[7:]
             if response_text.startswith("```"):
@@ -129,35 +128,42 @@ class DishSuggestionService(InitializeGoogleCloudServices):
     async def get_restaurant_recommendations(
         self, 
         dish_name: str, 
-        location: Optional[str] = None
+        location: Optional[str] = "Helsinki"
     ):
         if not self.gemini_model:
             raise Exception("Gemini model not initialized. Please set GEMINI_API_KEY or configure Google Cloud credentials.")
         
-        location_context = f" near {location}" if location else " nearby"
-        
         prompt = f"""
-            Based on the dish "{dish_name}", suggest 3-5 restaurants where this dish can be found{location_context}.
+            You are a restaurant recommendation expert. Find two REAL establishments (restaurants or cafes) in {location if location else "the local area"} where the dish "{dish_name}" can be found.
 
-            Respond in the following JSON format:
+            IMPORTANT REQUIREMENTS:
+            - Focus on establishments in the city: {location if location else "the local area"}
+            - Provide ACTUAL establishments names that exist in this city
+            - Include real street addresses in location: {location}
+            - Explain, in one sentence, why each establishment is good for this specific dish
+            - If you don't know specific establishments in this city, suggest well-known establishment types or chains that typically serve this dish in that city.
+
+            City: {location if location else "Not specified"}
+
+            Respond in the following JSON format (no markdown, no code blocks):
             {{
-                "restaurants": [
+                "establishments":
                     {{
-                        "name": "Restaurant Name",
-                        "address": "Street Address, City",
-                        "description": "Why this restaurant is good for this dish",
-                        "distance": "e.g., '2.5 km away' or '15 min walk'"
+                        "name": "Actual Restaurant / Cafe Name",
+                        "address": "Street Address, {location if location else 'City'}, Country",
+                        "description": "Why this establishments is good for {dish_name}",
+                        "distance": "e.g., 'In city center' or '2.5 km from city center'"
                     }}
-                ]
             }}
 
-            Only respond with valid JSON, no additional text.'
+            Return ONLY valid JSON, no additional text.
         """
 
         response_text = ""
         try:
             response = self.gemini_model.generate_content(prompt)
             response_text = response.text.strip()
+
             if response_text.startswith("```json"):
                 response_text = response_text[7:]
             if response_text.startswith("```"):
@@ -166,8 +172,14 @@ class DishSuggestionService(InitializeGoogleCloudServices):
                 response_text = response_text[:-3]
             response_text = response_text.strip()
             
+            # extract JSON if extra text
+            if "{" in response_text and "}" in response_text:
+                start = response_text.find("{")
+                end = response_text.rfind("}") + 1
+                response_text = response_text[start:end]
+            
             result = json.loads(response_text)
-            restaurants = result.get("restaurants", [])
+            restaurants = result.get("establishments", [])
             
             return [
                 RestaurantRecommendation(**rest) for rest in restaurants
@@ -177,7 +189,7 @@ class DishSuggestionService(InitializeGoogleCloudServices):
             
             return [
                 RestaurantRecommendation(
-                    name=f"Local Restaurant {i+1}",
+                    name=f"Local Establishment {i+1}",
                     address="Address not available",
                     description=f"May serve {dish_name}",
                     distance="Unknown"
@@ -185,11 +197,11 @@ class DishSuggestionService(InitializeGoogleCloudServices):
                 for i in range(3)
             ]
         except Exception as e:
-            print(f"Error getting restaurant recommendations: {e}")
+            print(f"Error getting recommendations: {e}")
             
             return [
                 RestaurantRecommendation(
-                    name=f"Local Restaurant {i+1}",
+                    name=f"Local Establishment {i+1}",
                     address="Address not available",
                     description=f"May serve {dish_name}",
                     distance="Unknown"
