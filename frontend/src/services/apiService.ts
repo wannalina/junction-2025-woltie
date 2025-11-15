@@ -7,7 +7,7 @@
  */
 import type {
     DishSuggestionRequest,
-    DishRecognitionResponse,
+    DishSuggestionResponse,
     DishAnalysisRequest,
     DishAnalysisResponse,
     ApiErrorResponse,
@@ -139,33 +139,16 @@ class WoltieApiService {
   }
 
   /**
-   * 分析菜品 - Wolty AI Assistant Feature 1 (Demo Mode)
-   * GET /api/analyze-dish
-   * 
-   * 分析餐厅提供的照片和描述，输出关于菜品的全面信息
-   * 
-   * Note: 这是一个 demo 端点，使用固定的测试数据，不需要参数
-   * 
-   * @returns 详细的菜品分析结果
-   */
-  async analyzeDish(): Promise<DishAnalysisResponse> {
-    const url = `${this.baseUrl}${API_ENDPOINTS.ANALYZE_DISH}`;
-    const response = await fetchWithTimeout(url, {
-      method: 'GET',
-    });
-
-    return handleApiResponse<DishAnalysisResponse>(response);
-  }
-
-  /**
-   * 分析菜品（完整版本 - 当后端支持时使用）
+   * 分析菜品 - Wolty AI Assistant Feature 1
    * POST /api/analyze-dish
    * 
-   * @deprecated 当前后端使用 demo 模式，请使用 analyzeDish() 方法
+   * 分析餐厅提供的照片和描述，输出关于菜品的全面信息
+   * 注意：这是演示模式，使用固定的测试数据，不需要传递参数
+   * 
    * @param request - 包含菜品标题、描述、图片等信息
    * @returns 详细的菜品分析结果
    */
-  async analyzeDishWithData(request: DishAnalysisRequest): Promise<DishAnalysisResponse> {
+  async analyzeDish(request: DishAnalysisRequest): Promise<DishAnalysisResponse> {
     // 验证必填字段
     if (!request.title?.trim()) {
       throw new ApiError(400, 'Validation Error', 'Title is required');
@@ -182,8 +165,7 @@ class WoltieApiService {
 
     const url = `${this.baseUrl}${API_ENDPOINTS.ANALYZE_DISH}`;
     const response = await fetchWithTimeout(url, {
-      method: 'POST',
-      body: JSON.stringify(request),
+      method: 'GET',
     });
 
     return handleApiResponse<DishAnalysisResponse>(response);

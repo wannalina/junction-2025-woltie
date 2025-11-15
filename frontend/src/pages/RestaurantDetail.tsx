@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { motion } from 'motion/react';
 import { CartoonFloatButton } from '../components/CartoonFloatButton';
 import { ScanningAnimation } from '../components/ScanningAnimation';
+import { apiService } from '../services';
 
 export function RestaurantDetail() {
   const { id } = useParams<{ id: string }>();
@@ -174,14 +175,29 @@ export function RestaurantDetail() {
 
   const handleLongPressStart = () => {
     setIsPressed(true);
-    longPressTimer.current = window.setTimeout(() => {
+    longPressTimer.current = window.setTimeout(async () => {
       setIsScanning(true);
-      // Navigate to AI scanner after 3 seconds of scanning
-      setTimeout(() => {
-        navigate('/ai-scanner');
-        setIsScanning(false);
-        setIsPressed(false);
-      }, 3000);
+      
+      // Call API to analyze dish using apiService
+      try {
+        const data = await apiService.analyzeDish();
+        console.log('API Response:', data);
+        
+        // Navigate to chat page after receiving response
+        setTimeout(() => {
+          navigate('/chat', { state: { analysisData: data } });
+          setIsScanning(false);
+          setIsPressed(false);
+        }, 1000);
+      } catch (error) {
+        console.error('Error calling API:', error);
+        // Still navigate even if API fails
+        setTimeout(() => {
+          navigate('/chat');
+          setIsScanning(false);
+          setIsPressed(false);
+        }, 1000);
+      }
     }, 500); // Long press duration
   };
 
