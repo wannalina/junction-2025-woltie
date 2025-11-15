@@ -22,7 +22,7 @@
   animation: float 3s ease-in-out infinite, wiggle 2s ease-in-out infinite;
 }
 
-.wolty-icon {
+.juho-icon {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -30,7 +30,7 @@
   transition: filter 0.3s ease;
 }
 
-.cartoon-float-button-wrapper:hover .wolty-icon {
+.cartoon-float-button-wrapper:hover .juho-icon {
   filter: drop-shadow(0 6px 15px rgba(74, 158, 255, 0.5));
 }
 

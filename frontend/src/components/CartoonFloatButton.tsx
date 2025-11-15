@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import woltyIcon from '../assets/wolty.svg';
+import juhoIcon from '../assets/juho.svg';
 import './CartoonFloatButton.css';
 
 export function CartoonFloatButton() {
@@ -8,11 +8,11 @@ export function CartoonFloatButton() {
   return (
     <div className="cartoon-float-button-wrapper" onClick={() => navigate('/next')}>
       <div className="cartoon-button">
-        {/* Wolty 卡通图标 */}
+        {/* Juho 卡通图标 */}
         <img 
-          src={woltyIcon} 
-          alt="Wolty" 
-          className="wolty-icon"
+          src={juhoIcon} 
+          alt="Juho" 
+          className="juho-icon"
         />
       </div>
       
