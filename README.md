@@ -73,3 +73,7 @@ To worktogether efficiently as a distributed hackathon team, we also relied on G
 Figma + Figma Make - Design and prototype
 
 Figma Make was prompted to create the scan effect on the food imagery. Part of the image was highlighted and then cropped into a circle to simulate the ring simulation while the image loaded. This animation was then connected to the main chatbot screen, where Make was asked to create the smooth message transition within the chat and show the conversation. The code from Figma make was used for front end development.
+
+ElevenLabs - Voice
+
+ElevenLabs was used to generate a voice-over for our demo video. We used multiple voices to test and decided on "Will" voice to get our message across in a clear and concise way. ElevenLabs helped bring our demo to the next level, using AI powered voice technology.
