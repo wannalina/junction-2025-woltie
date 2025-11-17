@@ -1,4 +1,5 @@
 # Juho — AI-Powered Local Food Discovery
+<img width="7680" height="4320" alt="1" src="https://github.com/user-attachments/assets/f0597c2a-304e-41dd-b240-853f9be9382e" />
 
 Wolt’s mission is to make cities better — but local commerce breaks down when customers can’t solve the menu mystery. Our team has experienced this firsthand while living abroad: menu names and photos often fail to convey what a dish actually tastes like, how it’s prepared, or how it compares to foods we already know. This gap leads to repetitive “safe choices,” limiting users from exploring the rich, authentic food culture around them.
 
@@ -14,6 +15,8 @@ Juho analyzes dish photos and descriptions on Wolt to break down flavors, textur
 ### Reverse dish search
 
 Users can describe a dish they’ve tried before — even if they forgot its name — and Juho finds the closest match. A query like “cheesy baked eggplant dish” instantly connects them to Melanzane alla Parmigiana, transforming vague cravings into real orders.
+
+###  [Demo Video](https://www.youtube.com/watch?v=jAqY52O_XbE)
 
 ## 👥 Team
 
@@ -53,7 +56,7 @@ By leaning into serverless (Cloud Run, Firebase Hosting) and managed developer t
 
 …and *minimize* time spent worrying about servers, infrastructure, or manual deployment steps.
 
-To worktogether efficiently as a distributed hackathon team, we also relied on Google Docs and Google Slides, and shared drives to keep product, design, and engineering in sync for real-time collaboration throughout the hackathon.
+To work together efficiently as a distributed hackathon team, we also relied on Google Docs and Google Slides, and shared drives to keep product, design, and engineering in sync for real-time collaboration throughout the hackathon.
 
 ### 💻 Frontend
 
